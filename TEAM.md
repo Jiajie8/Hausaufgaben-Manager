@@ -6,7 +6,7 @@ Jiajie, Baran, Halil, Emre
 Datenbank
 
 ### Baran
-Logik erstellen
+Logik erstellen: Kalender
 
 ### Halil
 GUI (Graphic User Interface): Benutzeroberfläche designen
