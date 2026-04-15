@@ -5,7 +5,7 @@ Jiajie, Baran, Halil, Emre
 
 ## Aufgaben
 ### Jiajie
-Datenbankmodell
+Datenbank
 
 ### Baran
 Logik erstellen
