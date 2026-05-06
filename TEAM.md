@@ -3,13 +3,13 @@ Jiajie, Baran, Halil, Emre
 
 ## Aufgaben
 ### Jiajie
-Datenbank
+Server für Datenbank
 
 ### Baran
-Logik erstellen: Kalender
+Kalender-Logik erstellen
 
 ### Halil
 GUI (Graphic User Interface): Benutzeroberfläche designen
 
 ### Emre
-Unittests, Fehleranalyse
+GUI, Unittests
