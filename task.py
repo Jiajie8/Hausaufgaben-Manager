@@ -5,7 +5,7 @@ class Task:
     VALID_PRIORITIES = ["Niedrig", "Mittel", "Hoch"]
     VALID_STATUS = ["Offen", "In Bearbeitung", "Erledigt"]
 
-    def __init__(self, title, description, priority, status, due_date):
+    def __init__(self, title, subject, description, priority, status, due_date):
         if not title or not title.strip():
             raise ValueError("Der Titel darf nicht leer sein.")
 
@@ -13,6 +13,7 @@ class Task:
         self.validate_status(status)
 
         self.title = title.strip()
+        self.subject = subject
         self.description = description
         self.priority = priority
         self.status = status
