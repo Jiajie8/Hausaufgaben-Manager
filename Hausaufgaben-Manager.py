@@ -4,7 +4,6 @@ import mysql.connector
 import hashlib
 from datetime import datetime
 
-# Imports deiner eigenen Klassen
 from task import Task
 from task_manager import TaskManager
 
