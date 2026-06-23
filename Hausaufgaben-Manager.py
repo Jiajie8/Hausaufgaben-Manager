@@ -152,30 +152,29 @@ def daten_laden(search_term="", status_filter="Alle", sortieren_typ=None):
     cursor = conn.cursor()
     
     try:
-        cursor.execute("SELECT Aufgabenummer, titel, fach, faelligkeitsdatum, prioritaet, status, beschreibung FROM aufgaben WHERE user_id = %s", [current_user_id])
+        cursor.execute("SELECT Aufgabenummer, titel, fach, faelligkeitsdatum, prioritaet, status, beschreibung FROM aufgaben WHERE user_id = %s", (current_user_id,))
+
         rows = cursor.fetchall()
         
         manager = TaskManager()
-        task_ids = {}
-        task_daten = {}
-
+        
+        # Tasks erstellen
         for r in rows:
             db_id, titel, fach, datum, prio, status, beschreibung = r
 
-            neuer_task = Task(
+            task = Task(
                 title=titel,
                 description=beschreibung or "",
                 priority=prio,
                 status=status,
-                due_date=str(datum)
+                due_date=str(datum),
+                subject=fach
             )
+            
+            task.db_id = db_id
+            manager.add_task(task)
 
-            manager.add_task(neuer_task)
-
-            task_ids[neuer_task] = db_id
-            task_daten[neuer_task] = fach
-
-        # HIER REAGIEREN WIR AUF DIE MANUELLEN KLICKS:
+        # Sortierung
         if sortieren_typ == "datum":
             gefiltert = manager.sort_tasks_by_due_date()
         elif sortieren_typ == "prio":
@@ -184,6 +183,7 @@ def daten_laden(search_term="", status_filter="Alle", sortieren_typ=None):
         else:
             gefiltert = manager.get_all_tasks()
 
+        # Status Filter
         if status_filter in ["Offen", "Erledigt"]:
             gefiltert = manager.filter_tasks_by_status(status_filter)
         elif status_filter == "Überfällig":
@@ -191,6 +191,7 @@ def daten_laden(search_term="", status_filter="Alle", sortieren_typ=None):
         elif status_filter == "Heute fällig":
             gefiltert = manager.get_tasks_due_today()
 
+        # Monat / Jahr Filter
         m_wahl = filter_month.get()
         j_wahl = filter_year.get()
 
@@ -202,14 +203,13 @@ def daten_laden(search_term="", status_filter="Alle", sortieren_typ=None):
             # Fügt den Bindestrich hinzu (z.B. "-01-"), damit es genau den Monat trifft
             gefiltert = [t for t in gefiltert if f"-{m_wahl}-" in str(t.due_date)]
 
+        # Suche
         if search_term:
             gefiltert = [t for t in gefiltert if search_term.lower() in t.title.lower() or search_term.lower() in t.description.lower()]
 
-        # Wir gehen die gefilterten Aufgaben durch und greifen direkt auf die passenden Originaldaten zu
+        # Anzeige in Tabelle
         for task in gefiltert:
-            db_id = task_ids[task]
-            
-            fach_anzeige = task_daten[task]
+            db_id = task.db_id
     
             sauberes_datum = str(task.due_date)[:10]
             tage_uebrig = task.days_left() if hasattr(task, 'days_left') else 0
@@ -224,10 +224,10 @@ def daten_laden(search_term="", status_filter="Alle", sortieren_typ=None):
                 tage_text = f"Noch {tage_uebrig} Tage"
 
             tree.insert("", "end", iid=db_id, values=(
-                task.title, 
-                fach_anzeige,      
-                sauberes_datum, 
-                task.priority, 
+                task.title,
+                task.subject,
+                sauberes_datum,
+                task.priority,
                 task.status,
                 tage_text
             ))
